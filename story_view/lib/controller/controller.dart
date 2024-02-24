@@ -6,7 +6,6 @@ import 'package:story_view_task/view/const/token.dart';
 
 class CategoryProvider extends ChangeNotifier {
   List<Category> storyData = [];
-
   Future<void> fetchCategories() async {
     try {
       final response = await http
