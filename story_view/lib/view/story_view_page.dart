@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:story_view_task/controller/controller.dart';
 import 'package:story_view_task/view/widgets/card_widget.dart';
 
 class StoryViewPage extends StatelessWidget {
@@ -59,6 +60,11 @@ class StoryViewPage extends StatelessWidget {
                   },
                 ),
               ),
+              ElevatedButton(
+                  onPressed: () {
+                    CategoryProvider().fetchCategories();
+                  },
+                  child: const Text("asa"))
             ],
           ),
         ),

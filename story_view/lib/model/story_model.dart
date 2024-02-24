@@ -1,8 +1,8 @@
 class Category {
-  final String name;
-  final List<Story> stories;
-  final String image;
-  final bool status;
+  final String? name;
+  final List<Story>? stories;
+  final String? image;
+  final bool? status;
 
   Category({
     required this.name,
@@ -23,21 +23,21 @@ class Category {
 }
 
 class Story {
-  final int id;
-  final int watchedCount;
+  final int? id;
+  final int? watchedCount;
   final String? videoLink;
   final String storyCategory;
   final String? duration;
-  final String title;
+  final String? title;
   final String? image;
   final String? videoFile;
-  final String type;
-  final String description;
-  final bool active;
-  final DateTime createdAt;
-  final int video;
-  final int category;
-  final int level;
+  final String? type;
+  final String? description;
+  final bool? active;
+  final DateTime? createdAt;
+  final int? video;
+  final int? category;
+  final int? level;
   final dynamic createdBy;
 
   Story({
