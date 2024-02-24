@@ -1,6 +1,6 @@
 class Category {
   final String? name;
-  final List<Story>? stories;
+  final List<Story> stories;
   final String? image;
   final bool? status;
 

@@ -64,58 +64,93 @@ class StoryViewPage extends StatelessWidget {
                         scrollDirection: Axis.horizontal,
                         itemCount: data.length,
                         itemBuilder: (context, index) {
-                          final story = data[index];
+                          final category = data[index];
+                          final stories = category.stories;
                           return Padding(
                             padding: const EdgeInsets.all(4.0),
                             child: Column(
                               children: [
                                 InkWell(
                                   onTap: () {
-                                    Navigator.push(context,
-                                        MaterialPageRoute(builder: (context) {
-                                      return StoryView(
-                                        storyItems: story.stories!
-                                            .map((story) => StoryItem(
-                                                  Image.network(
-                                                    story.image!,
-                                                    fit: BoxFit.cover,
-                                                  ),
-                                                  duration: const Duration(
-                                                      seconds: 15),
-                                                ))
-                                            .toList(),
-                                        controller: controller,
-                                        repeat: true,
-                                        onStoryShow: (storyItem, index) {},
-                                        onComplete: () {},
-                                        onVerticalSwipeComplete: (direction) {
-                                          if (direction == Direction.down) {
-                                            Navigator.pop(context);
-                                          }
-                                        },
+                                    List<StoryItem> storyItems = [];
+                                    try {
+                                      for (var story in stories) {
+                                        if (story.image != null &&
+                                            story.image!.isNotEmpty) {
+                                          storyItems.add(
+                                            StoryItem.pageImage(
+                                              url: story.image!,
+                                              controller: controller,
+                                            ),
+                                          );
+                                        } else if (story.videoLink != null &&
+                                            story.videoLink!.isNotEmpty) {
+                                          storyItems.add(
+                                            StoryItem.pageVideo(
+                                              story.videoLink!,
+                                              controller: controller,
+                                            ),
+                                          );
+                                        }
+                                      }
+
+                                      if (storyItems.isEmpty) {
+                                        throw Exception(
+                                            'No valid stories found.');
+                                      }
+
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => StoryView(
+                                            storyItems: storyItems,
+                                            controller: controller,
+                                            repeat: false,
+                                            onStoryShow: (storyItem, index) {
+                                              _buildOverlayWidget();
+                                            },
+                                            onComplete: () {},
+                                            onVerticalSwipeComplete:
+                                                (direction) {
+                                              if (direction == Direction.down) {
+                                                Navigator.pop(context);
+                                              }
+                                            },
+                                          ),
+                                        ),
                                       );
-                                    }));
+                                    } catch (e, stackTrace) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        const SnackBar(
+                                          content:
+                                              Text('Error loading stories'),
+                                        ),
+                                      );
+                                    }
                                   },
                                   child: Container(
                                     decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        border: Border.all(
-                                            color: Colors.red, width: 2.0)),
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color: Colors.red,
+                                        width: 2.0,
+                                      ),
+                                    ),
                                     child: CircleAvatar(
+                                      backgroundImage: NetworkImage(
+                                          category.image.toString()),
                                       radius: 35,
-                                      backgroundImage:
-                                          NetworkImage(story.image!),
                                     ),
                                   ),
                                 ),
-                                const SizedBox(
-                                  height: 2,
-                                ),
+                                const SizedBox(height: 2),
                                 Text(
-                                  story.name.toString(),
+                                  category.name!,
                                   style: const TextStyle(
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.bold),
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 )
                               ],
                             ),
@@ -128,6 +163,32 @@ class StoryViewPage extends StatelessWidget {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildOverlayWidget() {
+    return Align(
+      alignment: Alignment.bottomCenter,
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 16.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            IconButton(
+              icon: const Icon(Icons.message),
+              onPressed: () {
+                // Handle message button pressed
+              },
+            ),
+            IconButton(
+              icon: const Icon(Icons.share),
+              onPressed: () {
+                // Handle share button pressed
+              },
+            ),
+          ],
         ),
       ),
     );
