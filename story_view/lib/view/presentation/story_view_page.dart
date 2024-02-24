@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:story_view/controller/story_controller.dart';
 import 'package:story_view/story_view.dart';
 import 'package:story_view_task/controller/controller.dart';
 import 'package:story_view_task/view/widgets/card_widget.dart';
 
-class StoryViewPage extends StatelessWidget {
+class StoryViewPage extends StatefulWidget {
+  const StoryViewPage({Key? key}) : super(key: key);
+
+  @override
+  State<StoryViewPage> createState() => _StoryViewPageState();
+}
+
+class _StoryViewPageState extends State<StoryViewPage> {
   final controller = StoryController();
-  StoryViewPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -98,25 +103,58 @@ class StoryViewPage extends StatelessWidget {
                                         throw Exception(
                                             'No valid stories found.');
                                       }
-
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                          builder: (context) => StoryView(
-                                            storyItems: storyItems,
-                                            controller: controller,
-                                            repeat: false,
-                                            onStoryShow: (storyItem, index) {
-                                              _buildOverlayWidget();
-                                            },
-                                            onComplete: () {},
-                                            onVerticalSwipeComplete:
-                                                (direction) {
-                                              if (direction == Direction.down) {
-                                                Navigator.pop(context);
-                                              }
-                                            },
-                                          ),
+                                          builder: (context) {
+                                            List<StoryItem> currentStoryItems =
+                                                List.from(storyItems);
+                                            return Scaffold(
+                                              body: Stack(
+                                                children: [
+                                                  StoryView(
+                                                    storyItems:
+                                                        currentStoryItems,
+                                                    controller: controller,
+                                                    repeat: false,
+                                                    onStoryShow:
+                                                        (storyItem, index) {
+                                                      // setState(() {
+                                                      //   currentStoryItems[index]
+                                                      //       .duration;
+                                                      // });
+                                                    },
+                                                    onComplete: () {
+                                                      // controller.next();
+                                                      // final currentindex =
+                                                      //     currentStoryItems.indexOf(
+                                                      //         currentStoryItems[
+                                                      //             index]);
+                                                      // final isLastpage =
+                                                      //     currentStoryItems
+                                                      //                 .length -
+                                                      //             1 ==
+                                                      //         currentindex;
+                                                      // if (isLastpage) {
+                                                      //   Navigator.pop(context);
+                                                      // }
+                                                    },
+                                                    onVerticalSwipeComplete:
+                                                        (direction) {
+                                                      if (direction ==
+                                                          Direction.down) {
+                                                        Navigator.pop(context);
+                                                      }
+                                                    },
+                                                  ),
+                                                  _buildOverlayWidgets(
+                                                      category.image.toString(),
+                                                      category.name!),
+                                                  _buildOverlayWidget(),
+                                                ],
+                                              ),
+                                            );
+                                          },
                                         ),
                                       );
                                     } catch (e, stackTrace) {
@@ -174,21 +212,48 @@ class StoryViewPage extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.only(bottom: 16.0),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             IconButton(
               icon: const Icon(Icons.message),
-              onPressed: () {
-                // Handle message button pressed
-              },
+              onPressed: () {},
             ),
             IconButton(
               icon: const Icon(Icons.share),
-              onPressed: () {
-                // Handle share button pressed
-              },
+              onPressed: () {},
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildOverlayWidgets(String url, String name) {
+    return Align(
+      alignment: Alignment.topLeft,
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 16.0),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(25.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                CircleAvatar(
+                  radius: 17,
+                  backgroundImage: NetworkImage(url),
+                ),
+                const SizedBox(
+                  width: 10,
+                ),
+                Text(
+                  name,
+                  style: const TextStyle(
+                      fontWeight: FontWeight.bold, color: Colors.white),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );
