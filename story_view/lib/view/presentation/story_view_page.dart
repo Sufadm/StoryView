@@ -1,23 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:story_view/story_view.dart';
+import 'package:story_view/controller/story_controller.dart';
+import 'package:story_view/utils.dart';
+import 'package:story_view/widgets/story_view.dart';
 import 'package:story_view_task/controller/controller.dart';
 import 'package:story_view_task/view/widgets/card_widget.dart';
+import 'package:story_view_task/view/widgets/message_ui__widget.dart';
 
-class StoryViewPage extends StatefulWidget {
-  const StoryViewPage({Key? key}) : super(key: key);
-
-  @override
-  State<StoryViewPage> createState() => _StoryViewPageState();
-}
-
-class _StoryViewPageState extends State<StoryViewPage> {
+class StoryViewPage extends StatelessWidget {
+  StoryViewPage({Key? key}) : super(key: key);
+  final pagecontroller = PageController();
   final controller = StoryController();
-
   @override
   Widget build(BuildContext context) {
     Provider.of<CategoryProvider>(context, listen: false).fetchCategories();
     return Scaffold(
+      //appbar---
       appBar: AppBar(
         actions: [
           Padding(
@@ -25,7 +23,7 @@ class _StoryViewPageState extends State<StoryViewPage> {
             child: Container(
               width: 180,
               decoration: const BoxDecoration(
-                borderRadius: BorderRadius.all(Radius.circular(50)),
+                borderRadius: BorderRadius.all(Radius.circular(10)),
                 color: Color.fromARGB(255, 229, 228, 228),
               ),
               child: const Row(
@@ -34,7 +32,7 @@ class _StoryViewPageState extends State<StoryViewPage> {
                     "  University Assistant",
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                   ),
-                  Icon(Icons.account_balance_rounded)
+                  Icon(Icons.dashboard),
                 ],
               ),
             ),
@@ -44,8 +42,10 @@ class _StoryViewPageState extends State<StoryViewPage> {
           "AceApp",
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
-        leading: const Icon(
-          Icons.import_contacts,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 15),
+          child: Image.network(
+              "https://play-lh.googleusercontent.com/VFSngB3RXIl4GiZZU6tz0L9L9eszAVkT90EFJRWvJ8ZdFV8NaJy782_TqsYdfnpX0vw"),
         ),
       ),
       body: SafeArea(
@@ -53,10 +53,13 @@ class _StoryViewPageState extends State<StoryViewPage> {
           padding: const EdgeInsets.all(7.0),
           child: Column(
             children: [
+              //student two widget---
               cardWidget(),
               const SizedBox(
                 height: 7,
               ),
+
+              //Retrieving datas from server
               Consumer<CategoryProvider>(
                 builder: (context, value, child) {
                   final data = value.storyData;
@@ -73,9 +76,10 @@ class _StoryViewPageState extends State<StoryViewPage> {
                           final stories = category.stories;
                           return Padding(
                             padding: const EdgeInsets.all(4.0),
+                            //adding stories (images and videos) in story items---
                             child: Column(
                               children: [
-                                InkWell(
+                                GestureDetector(
                                   onTap: () {
                                     List<StoryItem> storyItems = [];
                                     try {
@@ -98,11 +102,12 @@ class _StoryViewPageState extends State<StoryViewPage> {
                                           );
                                         }
                                       }
-
                                       if (storyItems.isEmpty) {
                                         throw Exception(
                                             'No valid stories found.');
                                       }
+
+                                      //Storie view page
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
@@ -118,26 +123,9 @@ class _StoryViewPageState extends State<StoryViewPage> {
                                                     controller: controller,
                                                     repeat: false,
                                                     onStoryShow:
-                                                        (storyItem, index) {
-                                                      // setState(() {
-                                                      //   currentStoryItems[index]
-                                                      //       .duration;
-                                                      // });
-                                                    },
+                                                        (storyItem, index) {},
                                                     onComplete: () {
-                                                      // controller.next();
-                                                      // final currentindex =
-                                                      //     currentStoryItems.indexOf(
-                                                      //         currentStoryItems[
-                                                      //             index]);
-                                                      // final isLastpage =
-                                                      //     currentStoryItems
-                                                      //                 .length -
-                                                      //             1 ==
-                                                      //         currentindex;
-                                                      // if (isLastpage) {
-                                                      //   Navigator.pop(context);
-                                                      // }
+                                                      Navigator.pop(context);
                                                     },
                                                     onVerticalSwipeComplete:
                                                         (direction) {
@@ -147,10 +135,12 @@ class _StoryViewPageState extends State<StoryViewPage> {
                                                       }
                                                     },
                                                   ),
-                                                  _buildOverlayWidgets(
-                                                      category.image.toString(),
-                                                      category.name!),
-                                                  _buildOverlayWidget(),
+                                                  //profile pic, name,comment,share button widgets
+                                                  StoryProfileView(
+                                                      url: category.image
+                                                          .toString(),
+                                                      name: category.name!),
+                                                  const MessageSendWidget(),
                                                 ],
                                               ),
                                             );
@@ -161,12 +151,14 @@ class _StoryViewPageState extends State<StoryViewPage> {
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(
                                         const SnackBar(
+                                          duration: Duration(seconds: 1),
                                           content:
                                               Text('Error loading stories'),
                                         ),
                                       );
                                     }
                                   },
+                                  //border of circles----
                                   child: Container(
                                     decoration: BoxDecoration(
                                       shape: BoxShape.circle,
@@ -200,59 +192,6 @@ class _StoryViewPageState extends State<StoryViewPage> {
                 },
               ),
             ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildOverlayWidget() {
-    return Align(
-      alignment: Alignment.bottomCenter,
-      child: Padding(
-        padding: const EdgeInsets.only(bottom: 16.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            IconButton(
-              icon: const Icon(Icons.message),
-              onPressed: () {},
-            ),
-            IconButton(
-              icon: const Icon(Icons.share),
-              onPressed: () {},
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildOverlayWidgets(String url, String name) {
-    return Align(
-      alignment: Alignment.topLeft,
-      child: Padding(
-        padding: const EdgeInsets.only(bottom: 16.0),
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(25.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                CircleAvatar(
-                  radius: 17,
-                  backgroundImage: NetworkImage(url),
-                ),
-                const SizedBox(
-                  width: 10,
-                ),
-                Text(
-                  name,
-                  style: const TextStyle(
-                      fontWeight: FontWeight.bold, color: Colors.white),
-                ),
-              ],
-            ),
           ),
         ),
       ),

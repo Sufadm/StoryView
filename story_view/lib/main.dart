@@ -4,6 +4,7 @@ import 'package:story_view_task/controller/controller.dart';
 import 'package:story_view_task/view/presentation/story_view_page.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
 }
 

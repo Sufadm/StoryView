@@ -1,3 +1,5 @@
+// auth token
 const token =
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NDkxLCJ1c2VybmFtZSI6IlN0ZW5kdCBuZXciLCJlbWFpbCI6Im11cnRoYXphaWJyYWhpbUBnbWFpbC5jb20iLCJhZG1pbiI6ZmFsc2UsInJvbGUiOmZhbHNlLCJmYWN1bHR5IjpmYWxzZSwic3R1ZGVudCI6dHJ1ZSwiaWF0IjoxNzA4NDkwNjQzLCJleHAiOjE3MDkzNTQ2NDN9.O5dnmgQMpOO8Vob2NPh2UGCXLKiSlrdjqX3lELz4USo";
+//url
 const url = "https://v2devapi.aceonline.app/app/stories-app";
